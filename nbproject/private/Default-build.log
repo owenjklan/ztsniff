@@ -1,0 +1,67 @@
+gcc -c ztsniff.c -o ztsniff.o -Wall -fPIC -g -ggdb -rdynamic -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include   -I/usr/include/libxml2   -I/usr/include  
+In file included from project-includes.h:26:0,
+                 from ztsniff.c:39:
+zt-plugin.h:55:2: error: stray ‘@’ in program
+  @param args Arguments to pass to thread 
+  ^
+zt-plugin.h:55:3: error: unknown type name ‘param’
+  @param args Arguments to pass to thread 
+   ^
+zt-plugin.h:55:14: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘Arguments’
+  @param args Arguments to pass to thread 
+              ^
+zt-plugin.h:55:14: error: unknown type name ‘Arguments’
+In file included from project-includes.h:26:0,
+                 from ztsniff.c:39:
+zt-plugin.h:73:5: error: unknown type name ‘packet_handler’
+     packet_handler _f_process;  /** Address of our function to read queue that
+     ^
+zt-plugin.h:75:5: error: unknown type name ‘attach_handler’
+     attach_handler _f_attach;   /** Address to call to service the 'attach' request from the UI. */
+     ^
+In file included from ztsniff.c:41:0:
+zt-io.h:32:27: warning: "/*" within comment [-Wcomment]
+        char *title;       /** Title text */
+ ^
+zt-io.h:38:26: error: ‘select’ redeclared as different kind of symbol
+        zt_list_callback  select;
+                          ^
+In file included from /usr/include/x86_64-linux-gnu/sys/types.h:219:0,
+                 from /usr/include/stdlib.h:314,
+                 from project-includes.h:14,
+                 from ztsniff.c:39:
+/usr/include/x86_64-linux-gnu/sys/select.h:106:12: note: previous declaration of ‘select’ was here
+ extern int select (int __nfds, fd_set *__restrict __readfds,
+            ^
+In file included from ztsniff.c:41:0:
+zt-io.h:39:4: error: expected identifier or ‘(’ before ‘}’ token
+    };
+    ^
+zt-io.h:41:3: error: stray ‘@’ in program
+   @endcode  */
+   ^
+zt-io.h:41:4: error: unknown type name ‘endcode’
+   @endcode  */
+    ^
+zt-io.h:41:14: error: expected identifier or ‘(’ before ‘/’ token
+   @endcode  */
+              ^
+ztsniff.c: In function ‘main’:
+ztsniff.c:219:38: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+  proc_h = g_thread_new("ProcThread", (GThreadFunc)ztp->_f_process,
+                                      ^
+ztsniff.c:244:36: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+     g_tree_insert(_g_key_bindings, (gpointer)ztf_map_ui_key(ZT_KEY_F9),
+                                    ^
+ztsniff.c:246:36: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+     g_tree_insert(_g_key_bindings, (gpointer)ztf_map_ui_key(ZT_KEY_F10),
+                                    ^
+ztsniff.c: In function ‘ztc_sockaddr_toa’:
+ztsniff.c:391:2: warning: return discards ‘const’ qualifier from pointer target type [enabled by default]
+  return inet_ntop(AF_INET6, &sin6->sin6_addr, NULL, sizeof(sin6->sin6_addr));
+  ^
+ztsniff.c: In function ‘ztc_manage_interfaces’:
+ztsniff.c:461:5: warning: return makes pointer from integer without a cast [enabled by default]
+     return 1;
+     ^
+make: *** [ztsniff.o] Error 1

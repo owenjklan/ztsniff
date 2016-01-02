@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="94">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <df root="." name="0">
+      <df name="frameworks">
+        <in>ncurses-dialog.c</in>
+        <in>ncurses-gen-window.c</in>
+        <in>ncurses-list-window.c</in>
+        <in>ncurses-ztfw.h</in>
+        <in>ncurses.c</in>
+        <in>stdio.c</in>
+      </df>
+      <df name="html">
+        <df name="search">
+        </df>
+      </df>
+      <df name="latex">
+      </df>
+      <df name="plugins">
+        <df name="ssdp_data">
+          <in>discovery-packets.h</in>
+          <in>mediarenderer.h</in>
+          <in>mediaserver.h</in>
+        </df>
+        <in>mdns.c</in>
+        <in>skeleton.c</in>
+        <in>ssdp-util.c</in>
+        <in>ssdp-xml.c</in>
+        <in>ssdp.c</in>
+        <in>ssdp.h</in>
+      </df>
+      <in>pcapwrap.c</in>
+      <in>pcapwrap.h</in>
+      <in>plugin-core.c</in>
+      <in>project-includes.h</in>
+      <in>zt-commands.h</in>
+      <in>zt-config.c</in>
+      <in>zt-core.h</in>
+      <in>zt-framework.h</in>
+      <in>zt-io.c</in>
+      <in>zt-io.h</in>
+      <in>zt-plugin.h</in>
+      <in>zt-utils.c</in>
+      <in>zt-utils.h</in>
+      <in>ztsniff.c</in>
+    </df>
+  </logicalFolder>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Default" type="0">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <platform>2</platform>
+      </toolsSet>
+      <compile>
+        <compiledirpicklist>
+          <compiledirpicklistitem>.</compiledirpicklistitem>
+          <compiledirpicklistitem>${AUTO_FOLDER}</compiledirpicklistitem>
+        </compiledirpicklist>
+        <compiledir>${AUTO_FOLDER}</compiledir>
+        <compilecommandpicklist>
+          <compilecommandpicklistitem>${MAKE} ${ITEM_NAME}.o</compilecommandpicklistitem>
+          <compilecommandpicklistitem>${AUTO_COMPILE}</compilecommandpicklistitem>
+        </compilecommandpicklist>
+        <compilecommand>${AUTO_COMPILE}</compilecommand>
+      </compile>
+      <dbx_gdbdebugger version="1">
+        <gdb_pathmaps>
+        </gdb_pathmaps>
+        <gdb_interceptlist>
+          <gdbinterceptoptions gdb_all="false" gdb_unhandled="true" gdb_unexpected="true"/>
+        </gdb_interceptlist>
+        <gdb_options>
+          <DebugOptions>
+          </DebugOptions>
+        </gdb_options>
+        <gdb_buildfirst gdb_buildfirst_overriden="false" gdb_buildfirst_old="false"/>
+      </dbx_gdbdebugger>
+      <nativedebugger version="1">
+        <engine>gdb</engine>
+      </nativedebugger>
+      <runprofile version="9">
+        <runcommandpicklist>
+          <runcommandpicklistitem>"${OUTPUT_PATH}"</runcommandpicklistitem>
+        </runcommandpicklist>
+        <runcommand>"${OUTPUT_PATH}"</runcommand>
+        <rundir>.</rundir>
+        <buildfirst>false</buildfirst>
+        <terminal-type>0</terminal-type>
+        <remove-instrumentation>0</remove-instrumentation>
+        <environment>
+        </environment>
+      </runprofile>
+    </conf>
+  </confs>
+</configurationDescriptor>

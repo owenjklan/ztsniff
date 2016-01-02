@@ -1,0 +1,17 @@
+called: gcc
+	/home/snowey/c/ztsniff
+	gcc
+	-c
+	ztsniff.c
+	-o
+	ztsniff.o
+	-Wall
+	-fPIC
+	-g
+	-ggdb
+	-rdynamic
+	-I/usr/include/glib-2.0
+	-I/usr/lib/x86_64-linux-gnu/glib-2.0/include
+	-I/usr/include/libxml2
+	-I/usr/include
+

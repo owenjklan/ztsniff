@@ -1,0 +1,7 @@
+#ifndef _DISCOVERY_PACKETS_H_
+#define _DISCOVERY_PACKETS_H_
+
+#include "mediaserver.h"
+#include "mediarenderer.h"
+
+#endif  /* _DISCOVERY_PACKETS_H_ */
