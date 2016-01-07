@@ -111,7 +111,7 @@ static int load_plugin_file(char *fname) {
 	dlclose(handle);
 	free(pf);	
 
-	g_mutex_lock(&pi_list_mutex);
+	g_mutex_unlock(&pi_list_mutex);
 	return -1; /* Try next plugin */
     }
     /* Proof we have our manifest */
