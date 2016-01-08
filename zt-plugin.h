@@ -51,8 +51,8 @@ struct proc_thread_args {
 
 /** 
  @brief
- Definition for handler routine that acts as body of processing thread. */
- @param args Arguments to pass to thread 
+ Definition for handler routine that acts as body of processing thread.
+ @param args Arguments to pass to thread  */
 typedef void (*packet_handler)(struct proc_thread_args *args);
 
 /** struct  _zt_plugin... 
@@ -72,7 +72,7 @@ struct _zt_plugin {
     pcap_handler   _f_capture;  /** Address of our function to pass to pcap */
     packet_handler _f_process;  /** Address of our function to read queue that
 				   is filled by pcap thread */
-    attach_handler _f_attach;   /** Address to call to service the 'attach' request from the UI. */
+//    attach_handler _f_attach;   /** Address to call to service the 'attach' request from the UI. */
 
   #ifdef _ZT_INTERNAL/** Code added only for non-plugin code, ie. The core */
     void *handle;               /** Handle used by the dynamic loader. */

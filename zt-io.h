@@ -3,6 +3,8 @@
 
 #include "project-includes.h"
 
+#include "zt-io"
+
 #define ZT_STDOUT_MAX_SIZE  256
 
 /** @brief Define handles used for I/O Framework's
@@ -26,19 +28,7 @@ typedef void (*zt_list_callback)(void *userdata);
 typedef void (*zt_key_command)();
 
 /** @brief A "List Window" is a widget that provides a window with
-   a column menu of possible selections.
-  @code
-   struct _zt_list_window {
-       char *title;       /** Title text */
-       char *subtitle;     /** Optional subtitle */
-       void *fw_ptr;       /** Framework-specific window pointer */
-       GThread *owner;     /** ID of thread that called this */
-       GSList *items;      /** linked list of 'zt_list_window_items' */
-       
-       zt_list_callback  select;
-   };
-   typedef struct _zt_list_window zt_list_window;
-  @endcode  */
+   a column menu of possible selections. */
 struct _zt_list_window {
     char *title;       /** Title text */
     char *subtitle;     /** Optional subtitle */
