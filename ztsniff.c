@@ -37,6 +37,7 @@
      capture thread (In this case, that it will want a pcap_t *) */
 
 #include "project-includes.h"
+#include "zt-builtin.h"
 #include "zt-core.h"
 #include "zt-io.h"
 #include "zt-framework.h"
@@ -63,15 +64,9 @@ static void zt_main_loop();
 /* Binary tree mapping key chars to command functions */
 GTree *_g_key_bindings = NULL;
 
-/*
- * Built-in commands prototypes */
-/* For interfaces */
-zt_key_command ztc_manage_interfaces();
-
-/* For plugin management */
-zt_key_command ztc_manage_plugins();
-zt_key_command ztc_show_plugins();
-
+/* For managing the Plugin List */
+extern zt_plugin *_g_plugin_list;
+extern GMutex pi_list_mutex;
 
 /* List of our thread_pairs. ( zt_thread_pair )*/
 GSList *_g_thread_pairs = NULL;

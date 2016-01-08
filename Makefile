@@ -1,5 +1,5 @@
 CC=gcc
-OBJS= ztsniff.o zt-utils.o zt-io.o plugin-core.o pcapwrap.o
+OBJS= ztsniff.o zt-builtin.o zt-utils.o zt-io.o plugin-core.o pcapwrap.o
 
 GLIB2FLAGS=$(shell pkg-config --cflags glib-2.0)
 GLIB2LIBS=$(shell pkg-config --libs libxml-2.0 glib-2.0)

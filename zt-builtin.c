@@ -7,8 +7,10 @@
  * - Owen Klan  08th January 2016 */
 #include "project-includes.h"
 
+#include "zt-builtin.h"
 #include "zt-plugin.h"
 #include "zt-io.h"
+#include "zt-framework.h"
 
 extern zt_plugin *_g_plugin_list;
 extern GMutex pi_list_mutex;

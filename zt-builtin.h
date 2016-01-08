@@ -10,17 +10,10 @@
 
 #include "zt-io.h"
 
-#ifdef	__cplusplus
-extern "C" {
-#endif
-
-extern zt_key_command ztc_show_plugins()
-extern zt_key_command ztc_show_interfaces()
-extern zt_key_command ztc_manage_interfaces()
-
-#ifdef	__cplusplus
-}
-#endif
+extern zt_key_command ztc_show_plugins();
+extern zt_key_command ztc_show_interfaces();
+extern zt_key_command ztc_manage_interfaces();
+extern zt_key_command ztc_manage_plugins();
 
 #endif	/* ZT_BUILTIN_H */
 
