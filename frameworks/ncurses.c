@@ -39,6 +39,12 @@ GMutex curses_mutex;
 
 int _nc_height = 0, _nc_width = 0;
 
+void shutdown_framework() {
+  keypad(stdscr, FALSE);
+  nocbreak();
+  endwin();
+}
+
 int init_framework() {
     g_mutex_lock(&curses_mutex);
 

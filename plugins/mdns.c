@@ -74,7 +74,7 @@ pcap_handler capture(u_char *user, const struct pcap_pkthdr *h,
     default:
 	proto_type = "???";
     }
-    printf("\t%s\n", proto_type);
+    // printf("\t%s\n", proto_type);
     
     struct iphdr *iph = (struct iphdr *)(bytes + sizeof(struct ether_header));
     ztprint(MYTAG, "Vers: %d  HeadLen: %d  Protocol: %d\n",
