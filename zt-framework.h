@@ -8,12 +8,15 @@
 #define ZT_FWORK_NAME_MAX       64
 #define ZT_FWORK_TAG_MAX        12
 
+typedef void (*shutdown_func)();
+
 struct _zt_framework {
     char name[ZT_FWORK_NAME_MAX];
     char tag[ZT_FWORK_TAG_MAX];
     GThreadFunc _f_stdout;
     GThreadFunc _f_stderr;
     GThreadFunc _f_input;
+  shutdown_func shutdown;
 };
 typedef struct _zt_framework zt_framework;
 

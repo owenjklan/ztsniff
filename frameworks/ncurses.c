@@ -26,12 +26,15 @@ extern zt_plugin *_g_plugin_list;
 
 extern GTree *_g_key_bindings;
 
+void shutdown_framework();
+
 zt_framework fw_manifest = {
     .name = "NCurses Basic I/O Framework",
     .tag  = "NCurse\0",
     ._f_stdout = (GThreadFunc)Stdout_Handler,
     ._f_stderr = (GThreadFunc)Stderr_Handler,
-    ._f_input  = (GThreadFunc)Input_Handler
+    ._f_input  = (GThreadFunc)Input_Handler,
+    .shutdown = shutdown_framework
 };
 
 /* Ncurses output mutex */

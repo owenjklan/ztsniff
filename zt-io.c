@@ -70,6 +70,7 @@ static void _zt_fix_weak_syms(void *dl_handle) {
 /* Currently exit(1)'s on error :P */
 void zt_load_framework(char *path) {
     int (*init_func)();		       /* Initialisation function pointer */
+    void (*shutdown_func)();           /* Shutdown function pointer */
     void *dl_handle = NULL;
     
     /* Clear framework data structure */
@@ -81,6 +82,12 @@ void zt_load_framework(char *path) {
 	fprintf(stderr, "Failed loading framework! %s\n",
 		dlerror());
 	exit(1);
+    }
+
+    /* Look up shutdown_framework(). */
+    if ((shutdown_func = dlsym(dl_handle, "shutdown_framework")) == NULL) {
+      fprintf(stderr, "---  No shutdown routine found in %s\n", path);
+      exit(1);
     }
     
     /* look up init_framework(). Function */
