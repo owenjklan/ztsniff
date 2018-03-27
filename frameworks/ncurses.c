@@ -6,11 +6,13 @@
    is to be done, then a stub function must be supplied.
    - error_handler    - routine to handle output to the "Error stream"
    - output_handler   - routine to handle output to the "Output Stream" */
+#include <time.h>
+#include <errno.h>
+
 #include "zt-io.h"
 #include "zt-framework.h"
 #include "ncurses-ztfw.h"
 
-#include <errno.h>
 
 GThreadFunc Stderr_Handler (gpointer data);
 GThreadFunc Stdout_Handler (gpointer data);
@@ -138,63 +140,77 @@ GThreadFunc Stderr_Handler (gpointer data) {
     zt_outmsg *out_msg;
     
     while (1) {
-	out_msg = (zt_outmsg  *)g_async_queue_pop(Stderr);
+    out_msg = (zt_outmsg  *)g_async_queue_pop(Stderr);
 
-	g_mutex_lock(&curses_mutex);
+    g_mutex_lock(&curses_mutex);
 
-	if (strcmp(out_msg->pi_tag, " CORE ") == 0) {
-	    wattron(stderr_win, COLOR_PAIR(5)|A_BOLD);
-	    wprintw(stderr_win, "[%-8s] %s", out_msg->pi_tag, out_msg->content);
-	    wrefresh(stderr_win);
-	    wattron(stderr_win, COLOR_PAIR(1)|A_BOLD);
-	} else {
-	    wprintw(stderr_win, "[%-8s] %s", out_msg->pi_tag, out_msg->content);
-	}
-	wrefresh(stderr_win);
-	doupdate();
-
-	g_mutex_unlock(&curses_mutex);
-
-	free(out_msg->content);
-	free(out_msg);
+    if (strcmp(out_msg->pi_tag, " CORE ") == 0) {
+        wattron(stderr_win, COLOR_PAIR(5)|A_BOLD);
+        wprintw(stderr_win, "[%-8s] %s", out_msg->pi_tag, out_msg->content);
+        wrefresh(stderr_win);
+        wattron(stderr_win, COLOR_PAIR(1)|A_BOLD);
+    } else {
+        wprintw(stderr_win, "[%-8s] %s", out_msg->pi_tag, out_msg->content);
     }
+    wrefresh(stderr_win);
+    doupdate();
+
+    g_mutex_unlock(&curses_mutex);
+
+    free(out_msg->content);
+    free(out_msg);
+    }
+}
+
+char *prepend_timestamp(zt_outmsg *msg) {
+    char *msg_buffer;
+
+    msg_buffer = malloc(strlen(msg->content) + 12);
+    if (msg_buffer == NULL) {
+        return msg->content;
+    }
+    sprintf(msg_buffer, "%12ld | %s", time(NULL), msg->content);
+    return msg_buffer;
 }
 
 GThreadFunc Stdout_Handler (gpointer data) {
     zt_outmsg *out_msg; 
-   
+
     while (1) {
-	out_msg = (zt_outmsg  *)g_async_queue_pop(Stdout);
+        char *output;
+        out_msg = (zt_outmsg  *)g_async_queue_pop(Stdout);
 
-	g_mutex_lock(&curses_mutex);
+        g_mutex_lock(&curses_mutex);
 
-	if (strncmp(out_msg->pi_tag, " CORE ", 6) == 0) {
-	    wattron(stdout_win, COLOR_PAIR(4));
-	    wprintw(stdout_win, "[%-8s] %s", out_msg->pi_tag, out_msg->content);
-	    wrefresh(stdout_win);
-	    wattroff(stdout_win, COLOR_PAIR(4));
-	    wattron(stdout_win, COLOR_PAIR(2)|A_BOLD);
-	} else {
-	    wprintw(stdout_win, "[%-8s] %s", out_msg->pi_tag, out_msg->content);
-	    wrefresh(stdout_win);
-	}
+        output = prepend_timestamp(out_msg);
 
-	g_mutex_unlock(&curses_mutex);
+        if (strncmp(out_msg->pi_tag, " CORE ", 6) == 0) {
+            wattron(stdout_win, COLOR_PAIR(4));
+            wprintw(stdout_win, "[%-8s] %s", out_msg->pi_tag, output);
+            wrefresh(stdout_win);
+            wattroff(stdout_win, COLOR_PAIR(4));
+            wattron(stdout_win, COLOR_PAIR(2)|A_BOLD);
+        } else {
+            wprintw(stdout_win, "[%-8s] %s", out_msg->pi_tag, output);
+            wrefresh(stdout_win);
+        }
 
-	free(out_msg->content);
-	free(out_msg);
+        g_mutex_unlock(&curses_mutex);
+
+        free(out_msg->content);
+        free(out_msg);
     }
 }
 
 void change_stdio_focus() {    
     if (focus_win == stderr_win) {
-	mvwprintw(_stderr, 0, 2, " ");
-	mvwprintw(_stdout, 0, 2, "#");
-	focus_win = stdout_win;
+        mvwprintw(_stderr, 0, 2, " ");
+        mvwprintw(_stdout, 0, 2, "#");
+        focus_win = stdout_win;
     } else if (focus_win == stdout_win) {
-	mvwprintw(_stdout, 0, 2, " ");
-	mvwprintw(_stderr, 0, 2, "#");
-	focus_win = stderr_win;
+        mvwprintw(_stdout, 0, 2, " ");
+        mvwprintw(_stderr, 0, 2, "#");
+        focus_win = stderr_win;
     }
     wrefresh(_stderr);
     wrefresh(_stdout);
@@ -223,13 +239,13 @@ int nc_dialog_driver(zt_dialog *dw) {
     int c;
 
     while((c = getch()) != 'q'/*27*/) {
-	switch(c) {
-	case 10:
-	    return ITEM_SELECTED;
-	case 'q':
-	case 'Q':
-	    return 0;
-	}
+    switch(c) {
+    case 10:
+        return ITEM_SELECTED;
+    case 'q':
+    case 'Q':
+        return 0;
+    }
     }
 }
 
@@ -238,18 +254,18 @@ int nc_menu_driver(MENU *m) {
     int c;
     
     while((c = getch()) != 'q'/*27*/) {
-	switch(c) {
-	case KEY_DOWN:                                                  
-	    menu_driver(m, REQ_SCR_DLINE);
-	    menu_driver(m, REQ_DOWN_ITEM);                    
-	    break;                                          
-	case KEY_UP:                                            
-	    menu_driver(m, REQ_SCR_ULINE);
-	    menu_driver(m, REQ_UP_ITEM);
-	    break;                                          
-	case 10:
-	    return ITEM_SELECTED;
-	}
+    switch(c) {
+    case KEY_DOWN:                                                  
+        menu_driver(m, REQ_SCR_DLINE);
+        menu_driver(m, REQ_DOWN_ITEM);                    
+        break;                                          
+    case KEY_UP:                                            
+        menu_driver(m, REQ_SCR_ULINE);
+        menu_driver(m, REQ_UP_ITEM);
+        break;                                          
+    case 10:
+        return ITEM_SELECTED;
+    }
     }
 }
 
@@ -259,30 +275,30 @@ GThreadFunc Input_Handler(gpointer data) {
     zt_key_command zt;
 
     while (1) {
-	read_ch = getch();
+    read_ch = getch();
 
-	switch (read_ch) {
-	case 'Q':
-	case 'q':
-	    ztl_call_master(FWTAG, g_thread_self(), MC_EXIT, NULL);
-	    break;
-	case '\t':
-	    g_mutex_lock(&curses_mutex);
-	    change_stdio_focus();
-	    g_mutex_unlock(&curses_mutex);
-	    break;
-	default:
-	    /* Look for function in our key bindings, given this key */
-	    zt = (zt_key_command)g_tree_lookup(_g_key_bindings,
-					       (gpointer)read_ch);
+    switch (read_ch) {
+    case 'Q':
+    case 'q':
+        ztl_call_master(FWTAG, g_thread_self(), MC_EXIT, NULL);
+        break;
+    case '\t':
+        g_mutex_lock(&curses_mutex);
+        change_stdio_focus();
+        g_mutex_unlock(&curses_mutex);
+        break;
+    default:
+        /* Look for function in our key bindings, given this key */
+        zt = (zt_key_command)g_tree_lookup(_g_key_bindings,
+                           (gpointer)read_ch);
 
-	    /* if zt() is valid, call it */
-	    if (zt) {
-		zt();
-	    } else {
-		zterror(FWTAG, "Unbound key:  '%c'\n", read_ch);
-	    }
-	}; /*  switch (read_ch) {  */
+        /* if zt() is valid, call it */
+        if (zt) {
+        zt();
+        } else {
+        zterror(FWTAG, "Unbound key:  '%c'\n", read_ch);
+        }
+    }; /*  switch (read_ch) {  */
     }
 }
 

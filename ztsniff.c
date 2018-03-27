@@ -183,7 +183,7 @@ int main(int argc, char *argv[]) {
 	/* Each thread pair's capture thread will require a
 	   pcap_t context, let's make one */
 	pcap_t *pcap_h;
-	if ((pcap_h = zt_setup_pcap("eth0", ztp->filter)) == NULL) {
+	if ((pcap_h = zt_setup_pcap("wlp3s0", ztp->filter)) == NULL) {
 	    fprintf(stderr, "Failed creating LibPCap contexts! Aborting.\n");
 
 	    /* TODO: Better cleanup? */
