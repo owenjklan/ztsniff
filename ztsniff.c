@@ -5,30 +5,30 @@
 /* HISTORY:
    9th Oct. 2015  - Now that 'List Windows' work in the Ncurses UI module,
                     began implementing interface to allow runtime loading
-		    and unloading of plugins. Interface code first, then
-		    unloading code. probably need to rework loading code.
-		    Plugin options to be handled by 'F9' key.
+            and unloading of plugins. Interface code first, then
+            unloading code. probably need to rework loading code.
+            Plugin options to be handled by 'F9' key.
 
    1st Sept. 2015 - Finally commented start of file, lot's of things
                     changed between 27th and today that I won't bother
-		    mentioning :P
-		  - Moved "string table" creation/destruction code out of
-		    SSDP plugin, into newly created 'zt-utils.c' As of this
-		    writing, there is still a memory error to be hunted
-		    down and squashed (I "love" triple indirection)
-		  - Finally removed the horrible busy-waiting at the end
-		    of main(). Now, we have a GAsyncQueue, 'comm_q', that
-		    will serve as a control channel between plugins and the
-		    master thread (eg. for things like 'plugin_unload_self()',
-		    'exit_zsniff()', or 'plugin_create_new_thread_pair()'.
+            mentioning :P
+          - Moved "string table" creation/destruction code out of
+            SSDP plugin, into newly created 'zt-utils.c' As of this
+            writing, there is still a memory error to be hunted
+            down and squashed (I "love" triple indirection)
+          - Finally removed the horrible busy-waiting at the end
+            of main(). Now, we have a GAsyncQueue, 'comm_q', that
+            will serve as a control channel between plugins and the
+            master thread (eg. for things like 'plugin_unload_self()',
+            'exit_zsniff()', or 'plugin_create_new_thread_pair()'.
 
-		    NOTE: Previously mentioned function names are
-		    hypothetical at this point and when implemented, will have
-		    more meaningful/cohesive names. Also, 'comm_q' will be
-		    global in definition but accessible ONLY through the Core
-		    API, as it should be. (Note-to-self: Re-examine whether
-		    comm_q NEEDS to be global, module-local with globally
-		    defined API functions sounds more like it)
+            NOTE: Previously mentioned function names are
+            hypothetical at this point and when implemented, will have
+            more meaningful/cohesive names. Also, 'comm_q' will be
+            global in definition but accessible ONLY through the Core
+            API, as it should be. (Note-to-self: Re-examine whether
+            comm_q NEEDS to be global, module-local with globally
+            defined API functions sounds more like it)
  */
 
 /* TODO:
@@ -135,7 +135,7 @@ int main(int argc, char *argv[]) {
     _zt_init_io_streams();
 
     printf(" -[  ZTSniff  Ver. %d.%02d-%s ]- \n",
-	   ZT_VER_MAJOR, ZT_VER_MINOR, ZT_VER_CODENAME);
+        ZT_VER_MAJOR, ZT_VER_MINOR, ZT_VER_CODENAME);
 
     /* Load plugins, this may exit on critical failure, or
        if we end up with zero plugins successfully loaded. */
@@ -151,76 +151,76 @@ int main(int argc, char *argv[]) {
     printf("\nCreating thread pairs\n");
 
     while (ztp) {
-	GAsyncQueue *comms_q = NULL;
-	GThread *cap_h = NULL, *proc_h = NULL;
-	struct cap_thread_args  *cap_args;
-	struct proc_thread_args *proc_args;
-	zt_thread_pair          *zt_thp;
+        GAsyncQueue *comms_q = NULL;
+        GThread *cap_h = NULL, *proc_h = NULL;
+        struct cap_thread_args  *cap_args;
+        struct proc_thread_args *proc_args;
+        zt_thread_pair          *zt_thp;
 
-	/* Create GAsyncQueue for Inter-Thread communication */
-	comms_q = g_async_queue_new();
+        /* Create GAsyncQueue for Inter-Thread communication */
+        comms_q = g_async_queue_new();
 
-	/* Allocate new argument structures for thread pair */
-	cap_args = (struct cap_thread_args *)  \
-	    malloc(sizeof(struct cap_thread_args));
-	proc_args = (struct proc_thread_args *)  \
-	    malloc(sizeof(struct proc_thread_args));
-	zt_thp = (zt_thread_pair *)  \
-	    malloc(sizeof(zt_thread_pair));
+        /* Allocate new argument structures for thread pair */
+        cap_args = (struct cap_thread_args *)  \
+            malloc(sizeof(struct cap_thread_args));
+        proc_args = (struct proc_thread_args *)  \
+            malloc(sizeof(struct proc_thread_args));
+        zt_thp = (zt_thread_pair *)  \
+            malloc(sizeof(zt_thread_pair));
 
-	if (cap_args == NULL || proc_args == NULL || zt_thp == NULL) {
-	    fprintf(stderr, "Failed allocating memory for thread "
-		    "arguments!\n%s\n\nAborting...\n", strerror(errno));
+        if (cap_args == NULL || proc_args == NULL || zt_thp == NULL) {
+            fprintf(stderr, "Failed allocating memory for thread "
+                "arguments!\n%s\n\nAborting...\n", strerror(errno));
 
-	    if (cap_args)  free(cap_args);
-	    if (proc_args) free(proc_args);
-	    if (zt_thp)    free(zt_thp);
+            if (cap_args)  free(cap_args);
+            if (proc_args) free(proc_args);
+            if (zt_thp)    free(zt_thp);
 
-	    /* TODO: More clean-up code here?  */
-	    exit(1);
-	}
+            /* TODO: More clean-up code here?  */
+            exit(1);
+        }
 
-	/* Each thread pair's capture thread will require a
-	   pcap_t context, let's make one */
-	pcap_t *pcap_h;
-	if ((pcap_h = zt_setup_pcap("wlp3s0", ztp->filter)) == NULL) {
-	    fprintf(stderr, "Failed creating LibPCap contexts! Aborting.\n");
+        /* Each thread pair's capture thread will require a
+           pcap_t context, let's make one */
+        pcap_t *pcap_h;
+        if ((pcap_h = zt_setup_pcap("wlp3s0", ztp->filter)) == NULL) {
+            fprintf(stderr, "Failed creating LibPCap contexts! Aborting.\n");
 
-	    /* TODO: Better cleanup? */
-	    exit(1);
-	}
+            /* TODO: Better cleanup? */
+            exit(1);
+        }
 
-	/* Build argument structures for threads, build
-	   thread-pair structure, then add to list and fire
-	   up threads. */
-	cap_args->pcap_h = pcap_h;
-	cap_args->packet_q = comms_q;
-	cap_args->capture  = ztp->_f_capture;
+        /* Build argument structures for threads, build
+           thread-pair structure, then add to list and fire
+           up threads. */
+        cap_args->pcap_h = pcap_h;
+        cap_args->packet_q = comms_q;
+        cap_args->capture  = ztp->_f_capture;
 
-	printf("===  Launching threads for  '%s'...\n", ztp->name);
+        printf("===  Launching threads for  '%s'...\n", ztp->name);
 
-	/* Capture thread. Our supplied thread function is
-	   zt_capture_stub(), which calls plugin-supplied
-	   capture() to feed into pcap_loop(). */
-	cap_h = g_thread_new("CapThread", (GThreadFunc)(zt_capture_stub),
-			     cap_args);
+        /* Capture thread. Our supplied thread function is
+           zt_capture_stub(), which calls plugin-supplied
+           capture() to feed into pcap_loop(). */
+        cap_h = g_thread_new("CapThread", (GThreadFunc)(zt_capture_stub),
+                     cap_args);
 
-	proc_args->packet_q = comms_q;
+        proc_args->packet_q = comms_q;
 
-	/* Processing thread. */
-	proc_h = g_thread_new("ProcThread", (GThreadFunc)ztp->_f_process,
-			      (gpointer)proc_args);
+        /* Processing thread. */
+        proc_h = g_thread_new("ProcThread", (GThreadFunc)ztp->_f_process,
+                      (gpointer)proc_args);
 
-	/* Thread-pair structure for internal purposes */
+        /* Thread-pair structure for internal purposes */
         zt_thp->parent_pi   = ztp;        /* Set parent plugin */
-	zt_thp->producer    = cap_h;      /* Capture thread handle */
-	zt_thp->consumer    = proc_h;     /* Process thread handle */
-	zt_thp->comm_queue  = comms_q;    /* ASync Queue for cap -> proc */
+        zt_thp->producer    = cap_h;      /* Capture thread handle */
+        zt_thp->consumer    = proc_h;     /* Process thread handle */
+        zt_thp->comm_queue  = comms_q;    /* ASync Queue for cap -> proc */
 
-	/* Add to list */
-	_g_thread_pairs = g_slist_append(_g_thread_pairs, zt_thp);
+        /* Add to list */
+        _g_thread_pairs = g_slist_append(_g_thread_pairs, zt_thp);
 
-	ztp = ztp->next;
+        ztp = ztp->next;
     }
     printf("\n");
 
@@ -234,9 +234,9 @@ int main(int argc, char *argv[]) {
     /* Bind keys for our commands */
     g_tree_insert(_g_key_bindings, (gpointer)'t', (gpointer)test_func);
     g_tree_insert(_g_key_bindings, (gpointer)ztf_map_ui_key(ZT_KEY_F9),
-		  (gpointer)ztc_manage_plugins);
+          (gpointer)ztc_manage_plugins);
     g_tree_insert(_g_key_bindings, (gpointer)ztf_map_ui_key(ZT_KEY_F10),
-		  (gpointer)ztc_manage_interfaces);
+          (gpointer)ztc_manage_interfaces);
     
     /* Enter command loop, sleeping until plugin threads pass
        us a command message */
@@ -257,45 +257,45 @@ int main(int argc, char *argv[]) {
 static void zt_main_loop() {
     int loop_continue = 1;
     while (loop_continue) {
-	int command = 0;
-	char call_tag[ZT_PLUGIN_TAG_MAX];
-	
-	zt_master_call_args *args =				\
-	    (zt_master_call_args *)g_async_queue_pop(master_q);
-	if (!args) {
-	    /* TODO:  Handle a NULL better */
-	    zterror(" CORE ", "Null arguments passed with "
-		    "command arguments\n");
-	    loop_continue = 0;
-	}
-	
-	memcpy(call_tag, args->tag, ZT_PLUGIN_TAG_MAX);
-	command = args->command;
-	
-	switch (command) {
-	case MC_KILL_ALL:
-	    loop_continue = 0;
-	    break;
-	case MC_KILL_SELF:
-	    ztprint(" CORE ", "Thread '%p' wants out\n",args->thread_id);
-	    break;
-	case MC_EXIT:
-	    ztprint(" CORE ", "Exit request received from '%s'\n", call_tag);
-	    loop_continue = 0;
-	    break;
-	default:
-	    zterror(" CORE ", "Unknown command specifier byte received:   %d\n",
-		   args->command);
-	}
+        int command = 0;
+        char call_tag[ZT_PLUGIN_TAG_MAX];
+        
+        zt_master_call_args *args =             \
+            (zt_master_call_args *)g_async_queue_pop(master_q);
+        if (!args) {
+            /* TODO:  Handle a NULL better */
+            zterror(" CORE ", "Null arguments passed with "
+                "command arguments\n");
+            loop_continue = 0;
+        }
+    
+        memcpy(call_tag, args->tag, ZT_PLUGIN_TAG_MAX);
+        command = args->command;
+    
+        switch (command) {
+        case MC_KILL_ALL:
+            loop_continue = 0;
+            break;
+        case MC_KILL_SELF:
+            ztprint(" CORE ", "Thread '%p' wants out\n",args->thread_id);
+            break;
+        case MC_EXIT:
+            ztprint(" CORE ", "Exit request received from '%s'\n", call_tag);
+            loop_continue = 0;
+            break;
+        default:
+            zterror(" CORE ", "Unknown command specifier byte received:   %d\n",
+               args->command);
+        }
     }
 }
 
 /* This routine packages up a command request then pushes
    it onto the master Queue to wake up the master thread */
 void ztl_call_master(char *tag, GThread *thid,
-		     master_cmd command, void * args) {
-    zt_master_call_args *mc_args =					\
-	(zt_master_call_args *)malloc(sizeof(zt_master_call_args));
+             master_cmd command, void * args) {
+    zt_master_call_args *mc_args =                  \
+       (zt_master_call_args *)malloc(sizeof(zt_master_call_args));
     
     mc_args->tag       = tag;
     mc_args->thread_id = thid;
@@ -308,14 +308,15 @@ void ztl_call_master(char *tag, GThread *thid,
 /* Generic routine that returns string representation of an address */
 char *ztc_sockaddr_toa (struct sockaddr *sa) {
     if (!sa)
-	return "<null>";
+        return "<null>";
 
     if (sa->sa_family == AF_INET) {  /* IPv4 */
-	struct sockaddr_in *sin = (struct sockaddr_in *)sa;
-	return inet_ntoa(sin->sin_addr);
+        struct sockaddr_in *sin = (struct sockaddr_in *)sa;
+        return inet_ntoa(sin->sin_addr);
     } else if (sa->sa_family == AF_INET6) {  /* IPv6 */
-	struct sockaddr_in6 *sin6 = (struct sockaddr_in6 *)sa;
-	return inet_ntop(AF_INET6, &sin6->sin6_addr, NULL, sizeof(sin6->sin6_addr));
+        struct sockaddr_in6 *sin6 = (struct sockaddr_in6 *)sa;
+        return inet_ntop(AF_INET6, &sin6->sin6_addr,
+            NULL, sizeof(sin6->sin6_addr));
     }
 
     return "<WHOOPS>";

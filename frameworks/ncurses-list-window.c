@@ -1,13 +1,13 @@
 #include "ncurses-ztfw.h"
 
 BorderedWindow *generate_bordered_panel(int w, int h, int x, int y,
-					char *title, char *subtitle) {
+                                        char *title, char *subtitle) {
     BorderedWindow *bw = (BorderedWindow *)malloc(sizeof(BorderedWindow));
     
     if (!bw) {
-	zterror(fw_manifest.tag,
-		"Failed allocating memory for new BorderedWindow!\n");
-	return NULL;
+        zterror(fw_manifest.tag,
+            "Failed allocating memory for new BorderedWindow!\n");
+        return NULL;
     }
 
     LOCK_CURSES;
@@ -28,13 +28,14 @@ BorderedWindow *generate_bordered_panel(int w, int h, int x, int y,
 
     wattron(_pi, A_BOLD|A_UNDERLINE|COLOR_PAIR(3));
     box(_pi, ACS_VLINE, ACS_HLINE);
-    if (title)
-	mvwprintw(_pi, 0, 2, " %s ", title);
+    if (title) {
+        mvwprintw(_pi, 0, 2, " %s ", title);
+    }
 
     if (subtitle) {
-	wattron(_pi, A_BOLD);
-	mvwprintw(_pi, h-1, 2, " %s ", subtitle);
-	wattroff(_pi, A_BOLD);
+        wattron(_pi, A_BOLD);
+        mvwprintw(_pi, h-1, 2, " %s ", subtitle);
+        wattroff(_pi, A_BOLD);
     }
 
     wrefresh(_pi);
@@ -55,15 +56,15 @@ BorderedWindow *generate_bordered_panel(int w, int h, int x, int y,
 }
 
 zt_list_window *ztf_new_list_window(char *title, char *subtitle,
-				    int width, int height,
-				    int x, int y,
-				    zt_list_callback select) {
+                    int width, int height,
+                    int x, int y,
+                    zt_list_callback select) {
     zt_list_window *ret_window;
     ret_window = (zt_list_window *)malloc(sizeof(zt_list_window));;
 
     if (ret_window == NULL) {
-	/* Failed allocating memory for new window! */
-	return NULL;
+        /* Failed allocating memory for new window! */
+        return NULL;
     }
 
     if (title) ret_window->title = strdup(title);
@@ -73,9 +74,8 @@ zt_list_window *ztf_new_list_window(char *title, char *subtitle,
     ret_window->owner = g_thread_self();
     ret_window->items = NULL;
     /* Generate bordered window, receive back as PANEL */
-    BorderedWindow *bw =
-	generate_bordered_panel(width, height, x, y,
-				title, subtitle);
+    BorderedWindow *bw = generate_bordered_panel(width, height, x, y,
+                                                 title, subtitle);
     ret_window->fw_ptr = bw;
     ret_window->select = (zt_list_callback)select;
 
@@ -89,7 +89,7 @@ void ztf_list_window_destroy(zt_list_window *lw) {
 
 /* Add a new item to the list window. */
 void ztf_list_window_add(zt_list_window *lw, char *text,
-			 char *descr, void *userdata) {
+             char *descr, void *userdata) {
     zt_list_window_item *item = NULL ;
     int  item_size = sizeof(zt_list_window_item);
     char *text_arg, *descr_arg;
@@ -97,19 +97,19 @@ void ztf_list_window_add(zt_list_window *lw, char *text,
     item = (zt_list_window_item *)malloc(item_size);
 
     if (item == NULL) {
-	zterror(" CORE ", "!!! Couldn't allocate memory for item!\n");
-	return;
+        zterror(" CORE ", "!!! Couldn't allocate memory for item!\n");
+        return;
     }
 
     if (text)
-	text_arg = text;
+        text_arg = text;
     else
-	text_arg = "<null>";
+        text_arg = "<null>";
 
     if (descr)
-	descr_arg = descr;
+        descr_arg = descr;
     else
-	descr_arg = "<null>";
+        descr_arg = "<null>";
 
     item->text = strdup(text_arg);
     item->descr = strdup(descr_arg);
@@ -138,24 +138,25 @@ void *ztf_list_window_show(zt_list_window *lw) {
     /* Add items to list for ncurses 'menu' */
     int i = 0;
     for (i = 0; i < num_items; i++) {
-	zt_list_window_item *li = 
-	    (zt_list_window_item *)g_slist_nth_data(lw->items, i);
-	char *text, *descr;
+        zt_list_window_item *li = 
+            (zt_list_window_item *)g_slist_nth_data(lw->items, i);
+        char *text, *descr;
 
-	text = li->text;
-	descr = li->descr;
-	zterror(fw_manifest.tag, "li->text:  '%s'  li->descr:  '%s'\n",
-		text, descr);
+        text = li->text;
+        descr = li->descr;
+        zterror(fw_manifest.tag, "li->text:  '%s'  li->descr:  '%s'\n",
+                text, descr);
 
-	list_items[i] = (ITEM *)new_item(text, descr);
-	if (list_items[i] == NULL) {
-	    zterror(fw_manifest.tag, "NULL in menu! i = %d\n", i);
-	    if (errno == E_BAD_ARGUMENT) {
-		zterror("XXX", "BAD ARG\n");
-	    }
-	}
-	set_item_userptr(list_items[i], li->userdata);
+        list_items[i] = (ITEM *)new_item(text, descr);
+        if (list_items[i] == NULL) {
+            zterror(fw_manifest.tag, "NULL in menu! i = %d\n", i);
+            if (errno == E_BAD_ARGUMENT) {
+                zterror("XXX", "BAD ARG\n");
+            }
+        }
+        set_item_userptr(list_items[i], li->userdata);
     }
+
     list_items[num_items] = (ITEM *)NULL;
 
     MENU *my_menu = new_menu((ITEM **)list_items);
@@ -181,9 +182,9 @@ void *ztf_list_window_show(zt_list_window *lw) {
     /* If we actually selected something, return the associated
        'user data', otherwise NULL to indicate 'cancel' */
     if (menu_ret == ITEM_SELECTED) {
-	ret_ptr = item_userptr(current_item(my_menu));
+        ret_ptr = item_userptr(current_item(my_menu));
     } else {
-	ret_ptr = NULL;
+        ret_ptr = NULL;
     }
 
     /* hide panel, don't destroy menu items */

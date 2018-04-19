@@ -1,5 +1,5 @@
 /* Basic ZTSniff I/O Framework that handles the
-   Standard C/Unix I/O Streams:  stdin(not yet), stdout & stdarg
+   Standard C/Unix I/O Streams:  stdin(not yet), stdout & stderr
 
    ALL FRAMEWORKS MUST SUPPLY:
    - init_framework() - routine to initialise framework. If nothing
@@ -45,9 +45,9 @@ GMutex curses_mutex;
 int _nc_height = 0, _nc_width = 0;
 
 void shutdown_framework() {
-  keypad(stdscr, FALSE);
-  nocbreak();
-  endwin();
+    keypad(stdscr, FALSE);
+    nocbreak();
+    endwin();
 }
 
 int init_framework() {
@@ -275,30 +275,30 @@ GThreadFunc Input_Handler(gpointer data) {
     zt_key_command zt;
 
     while (1) {
-    read_ch = getch();
+        read_ch = getch();
 
-    switch (read_ch) {
-    case 'Q':
-    case 'q':
-        ztl_call_master(FWTAG, g_thread_self(), MC_EXIT, NULL);
-        break;
-    case '\t':
-        g_mutex_lock(&curses_mutex);
-        change_stdio_focus();
-        g_mutex_unlock(&curses_mutex);
-        break;
-    default:
-        /* Look for function in our key bindings, given this key */
-        zt = (zt_key_command)g_tree_lookup(_g_key_bindings,
-                           (gpointer)read_ch);
+        switch (read_ch) {
+        case 'Q':
+        case 'q':
+            ztl_call_master(FWTAG, g_thread_self(), MC_EXIT, NULL);
+            break;
+        case '\t':
+            g_mutex_lock(&curses_mutex);
+            change_stdio_focus();
+            g_mutex_unlock(&curses_mutex);
+            break;
+        default:
+            /* Look for function in our key bindings, given this key */
+            zt = (zt_key_command)g_tree_lookup(_g_key_bindings,
+                               (gpointer)read_ch);
 
-        /* if zt() is valid, call it */
-        if (zt) {
-        zt();
-        } else {
-        zterror(FWTAG, "Unbound key:  '%c'\n", read_ch);
-        }
-    }; /*  switch (read_ch) {  */
+            /* if zt() is valid, call it */
+            if (zt) {
+            zt();
+            } else {
+            zterror(FWTAG, "Unbound key:  '%c'\n", read_ch);
+            }
+        }; /*  switch (read_ch) {  */
     }
 }
 
